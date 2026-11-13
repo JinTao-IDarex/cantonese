@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" data-fs="m">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>粤普差异对照 — 粤语系统教程</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>
+(function(){try{var r=document.documentElement;
+r.setAttribute("data-theme",JSON.parse(localStorage.getItem("yy2.theme")||'"light"')==="dark"?"dark":"light");
+var f=JSON.parse(localStorage.getItem("yy2.fs")||'"m"');r.setAttribute("data-fs",/^[sml]$/.test(f)?f:"m");
+}catch(e){}})();
+</script>
+</head>
+<body data-page="diff">
+
+<header id="topbar"></header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="content">
+
+    <div class="page-head">
+      <div class="crumb"><a href="index.html">首页</a><span>›</span>粤普差异</div>
+      <div class="eyebrow">Special · Cantonese vs Mandarin</div>
+      <h1 class="page-title">粤普差异：<span class="accent">逐组对照</span></h1>
+      <p class="page-desc">粤语与普通话书写相通，但用词与语序是两套系统。本专题把差异最集中的领域拆成 <b id="g-total">—</b> 组、共 <b id="p-total">—</b> 对，逐个左右对照，并配小练习即时检验。看完你就能避开「走＝走路」「食＝吃」这类最常见的陷阱。</p>
+    </div>
+
+    <div class="chips" id="dg-chips"></div>
+
+    <div id="diff-box"></div>
+
+    <section class="sec" id="dg-mistakes">
+      <div class="sec-head"><h2>本专题错题</h2><span class="cnt" id="dm-cnt"></span><span class="rule"></span>
+        <button class="btn sm ghost" id="dm-clear">清空</button></div>
+      <div id="dm-list"></div>
+    </section>
+
+    <p class="voice-note muted small"></p>
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="footer-in">
+    <span>同一个意思，两种说法 —— 分清了就不会「鸡同鸭讲」。</span>
+    <span>粤语系统教程 V2 · 专题</span>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+<script src="assets/data-phonetics.js"></script>
+<script src="assets/data-vocab.js"></script>
+<script src="assets/data-grammar.js"></script>
+<script src="assets/data-dialogues.js"></script>
+<script src="assets/data-diff.js"></script>
+<script src="assets/data-quiz.js"></script>
+<script>
+(function(){
+  var $ = YY.$, esc = YY.esc;
+  var pairTotal = DIFF_GROUPS.reduce(function(a, g){ return a + g.pairs.length; }, 0);
+  $("#g-total").textContent = DIFF_GROUPS.length;
+  $("#p-total").textContent = pairTotal;
+
+  YY.setToc(DIFF_GROUPS.map(function(g, i){
+    return {id:"dg-" + i, label:g.g.split("：")[0], n:YY.pad(i + 1), c:g.pairs.length};
+  }));
+
+  $("#dg-chips").innerHTML = DIFF_GROUPS.map(function(g, i){
+    return '<button class="chip" data-jump="' + i + '">' + esc(g.g.split("：")[0]) + '<span class="n">' + g.pairs.length + "</span></button>";
+  }).join("");
+  $("#dg-chips").addEventListener("click", function(e){
+    var c = e.target.closest(".chip");
+    if(!c) return;
+    var el = document.getElementById("dg-" + c.dataset.jump);
+    if(el) el.scrollIntoView({block:"start"});
+  });
+
+  var box = $("#diff-box");
+  DIFF_GROUPS.forEach(function(g, gi){
+    var sec = document.createElement("section");
+    sec.className = "sec"; sec.id = "dg-" + gi;
+    sec.innerHTML =
+      '<div class="sec-head"><h2><span style="font-family:var(--mono);font-size:.82rem;color:var(--primary);margin-right:8px">' + YY.pad(gi + 1) + "</span>" + esc(g.g) + "</h2>" +
+      '<span class="cnt">' + g.pairs.length + " 对</span><span class=\"rule\"></span></div>" +
+      "<p>" + esc(g.d) + "</p>" +
+      '<div style="margin-top:16px">' + g.pairs.map(function(p, pi){
+        return '<div class="diff-pair" id="dg-' + gi + "-" + pi + '">' +
+          '<div class="dp-body">' +
+            '<div class="dp-col"><div class="dp-collab yue-lab">粤语</div>' +
+              '<div class="dp-y">' + esc(p.y) + '</div><div class="dp-j">' + esc(p.j) + "</div>" +
+              '<div style="margin-top:9px"><button class="btn sm ghost" data-say="' + esc(p.y) + '">朗读</button></div></div>' +
+            '<div class="dp-col"><div class="dp-collab man-lab">普通话</div>' +
+              '<div class="dp-m">' + esc(p.m) + "</div></div>" +
+          "</div>" +
+          (p.note ? '<div class="dp-note">' + esc(p.note) + "</div>" : "") +
+        "</div>";
+      }).join("") + "</div>" +
+      '<div class="sec" style="margin-top:26px"><div class="sec-head"><h3 style="font-size:1rem">小练习</h3>' +
+        '<span class="cnt">' + g.quiz.length + ' 题</span><span class="rule"></span></div>' +
+        '<div id="dq-' + gi + '"></div>' +
+        '<div class="btnrow mt16" id="quiz-bar-dg' + gi + '">' +
+          '<button class="btn primary" data-submit="1">交卷</button>' +
+          '<button class="btn ghost" data-reset="1">重做</button></div>' +
+        '<div class="quiz-result" id="res-dg' + gi + '"></div></div>';
+    box.appendChild(sec);
+
+    YY.renderQuiz($("#dq-" + gi), {key:"dg" + gi, title:g.g.split("：")[0] + " 小练习", qs:g.quiz});
+  });
+
+  /* 本专题错题 */
+  function renderMistakes(){
+    var ms = YY.mistakes().filter(function(m){ return /^dg\d+$/.test(m.key); });
+    $("#dm-cnt").textContent = ms.length ? "共 " + ms.length + " 题" : "";
+    if(!ms.length){ $("#dm-list").innerHTML = '<div class="empty">本专题暂无错题。做完上面的小练习，答错的题会自动收进这里。</div>'; return; }
+    $("#dm-list").innerHTML = ms.map(function(m){
+      return '<div class="mistake"><span class="mi">' + (m.qi + 1) + '</span><div class="mb">' +
+        '<div class="mq">' + m.q + "</div>" +
+        '<div class="ma">你选：<i>' + (m.chose == null ? "未作答" : esc(m.o[m.chose])) + "</i>　正确答案：<b>" + esc(m.o[m.a]) + "</b>　·　" + esc(m.t) + "</div>" +
+        '<div class="ma">' + m.e + "</div></div></div>";
+    }).join("");
+  }
+  renderMistakes();
+  document.addEventListener("yy:progress", renderMistakes);
+
+  $("#dm-clear").addEventListener("click", function(){
+    if(!YY.mistakes().some(function(m){ return /^dg\d+$/.test(m.key); })){ YY.toast("本专题没有错题"); return; }
+    if(!confirm("确定清空本专题错题？")) return;
+    YY.saveMistakes(YY.mistakes().filter(function(m){ return !/^dg\d+$/.test(m.key); }));
+    renderMistakes();
+    YY.toast("已清空本专题错题");
+  });
+})();
+</script>
+</body>
+</html>

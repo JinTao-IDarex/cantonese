@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" data-fs="m">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>语法 · 11 专题 — 粤语系统教程</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>
+(function(){try{var r=document.documentElement;
+r.setAttribute("data-theme",JSON.parse(localStorage.getItem("yy2.theme")||'"light"')==="dark"?"dark":"light");
+var f=JSON.parse(localStorage.getItem("yy2.fs")||'"m"');r.setAttribute("data-fs",/^[sml]$/.test(f)?f:"m");
+}catch(e){}})();
+</script>
+</head>
+<body data-page="grammar">
+
+<header id="topbar"></header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="content">
+
+    <div class="page-head">
+      <div class="crumb"><a href="index.html">首页</a><span>›</span>语法</div>
+      <div class="eyebrow">Book Three · Grammar</div>
+      <h1 class="page-title">语法：<span class="accent">11 个思维开关</span></h1>
+      <p class="page-desc">粤语与普通话同源，差别不在「有没有语法」，而在语序方向与虚词系统：时间状语后置、双宾语倒装、体貌助词咗／紧／过、比较句「高过」、正反问「食唔食」。这些开关一开，讲出来就是广州腔。</p>
+    </div>
+
+    <div class="sec" style="margin-bottom:22px">
+      <div class="btnrow" style="justify-content:space-between">
+        <button class="btn sm ghost" id="btn-reset">清空本页标记</button>
+        <span class="muted small">已精读 <b id="g-num">0</b> / <span id="g-total">—</span> 个专题</span>
+      </div>
+      <div class="chips" id="g-chips" style="margin-top:16px"></div>
+    </div>
+
+    <div id="grammar-box"></div>
+
+    <p class="voice-note muted small"></p>
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="footer-in">
+    <span>语法不求背，只求开口前过一遍框架。</span>
+    <span>粤语系统教程 V2 · 第三篇</span>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+<script src="assets/data-phonetics.js"></script>
+<script src="assets/data-vocab.js"></script>
+<script src="assets/data-grammar.js"></script>
+<script src="assets/data-dialogues.js"></script>
+<script src="assets/data-diff.js"></script>
+<script src="assets/data-quiz.js"></script>
+<script>
+(function(){
+  var $ = YY.$, esc = YY.esc;
+  $("#g-total").textContent = GRAMMAR.length;
+
+  YY.setToc(GRAMMAR.map(function(g, i){
+    return {id:"g-" + i, label:g.t, n:YY.pad(i + 1)};
+  }));
+
+  $("#g-chips").innerHTML =
+    '<button class="chip active" data-jump="all">全部</button>' +
+    GRAMMAR.map(function(g, i){
+      return '<button class="chip" data-jump="' + i + '">' + esc(g.t) + "</button>";
+    }).join("");
+  $("#g-chips").addEventListener("click", function(e){
+    var c = e.target.closest(".chip");
+    if(!c) return;
+    YY.$$("#g-chips .chip").forEach(function(x){ x.classList.remove("active"); });
+    c.classList.add("active");
+    if(c.dataset.jump === "all"){ window.scrollTo({top:0, behavior:"smooth"}); return; }
+    var el = document.getElementById("g-" + c.dataset.jump);
+    if(el) el.scrollIntoView({block:"start"});
+  });
+
+  $("#grammar-box").innerHTML = GRAMMAR.map(function(g, i){
+    var done = YY.isLearned("g:" + i);
+    return '<section class="sec" id="g-' + i + '">' +
+      '<div class="sec-head"><h2><span style="font-family:var(--mono);font-size:.82rem;color:var(--primary);margin-right:8px">' + YY.pad(i + 1) + "</span>" + esc(g.t) + "</h2>" +
+      '<span class="cnt">' + g.ex.length + ' 例句</span><span class="rule"></span>' +
+      '<button class="btn sm' + (done ? " on" : "") + '" data-mark="g:' + i + '" data-base="标记已读" data-done="已读 ✓">' + (done ? "已读 ✓" : "标记已读") + "</button></div>" +
+      g.p.map(function(par){ return "<p>" + esc(par) + "</p>"; }).join("") +
+      (g.pat ? '<div class="quote"><span class="qt">句型框架</span>' + esc(g.pat) + "</div>" : "") +
+      '<div class="lines" style="margin-top:14px">' + g.ex.map(function(ex){
+        return '<div class="dline"><span class="who" style="text-align:left">例句</span><div>' +
+          '<div class="y">' + esc(ex.y) + "</div>" +
+          '<div class="j">' + esc(ex.j) + "</div>" +
+          '<div class="m">' + esc(ex.m) + "</div>" +
+          '<div class="acts"><button class="btn sm ghost" data-say="' + esc(ex.y) + '">朗读</button></div>' +
+        "</div></div>";
+      }).join("") + "</div></section>";
+  }).join("");
+
+  function refresh(){
+    var n = 0;
+    GRAMMAR.forEach(function(_, i){ if(YY.isLearned("g:" + i)) n++; });
+    $("#g-num").textContent = n;
+  }
+  document.addEventListener("yy:progress", refresh);
+  refresh();
+
+  $("#btn-reset").addEventListener("click", function(){
+    if(!confirm("确定清除本页全部「已读」标记？")) return;
+    GRAMMAR.forEach(function(_, i){ if(YY.isLearned("g:" + i)) YY.toggleLearned("g:" + i); });
+    YY.$$(".sec-head .btn.on").forEach(function(b){ b.classList.remove("on"); b.textContent = "标记已读"; });
+    document.dispatchEvent(new CustomEvent("yy:progress"));
+    YY.toast("已清空本页标记");
+  });
+})();
+</script>
+</body>
+</html>

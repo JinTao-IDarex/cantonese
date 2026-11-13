@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" data-fs="m">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>练习测验 · 5 组 — 粤语系统教程</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>
+(function(){try{var r=document.documentElement;
+r.setAttribute("data-theme",JSON.parse(localStorage.getItem("yy2.theme")||'"light"')==="dark"?"dark":"light");
+var f=JSON.parse(localStorage.getItem("yy2.fs")||'"m"');r.setAttribute("data-fs",/^[sml]$/.test(f)?f:"m");
+}catch(e){}})();
+</script>
+</head>
+<body data-page="practice">
+
+<header id="topbar"></header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="content">
+
+    <div class="page-head">
+      <div class="crumb"><a href="index.html">首页</a><span>›</span>练习测验</div>
+      <div class="eyebrow">Book Five · Practice</div>
+      <h1 class="page-title">练习测验：<span class="accent">5 组 40 题</span></h1>
+      <p class="page-desc">语音辨析、词汇理解、语法运用、对话应对、综合测验 —— 每组 8 题，交卷即出分并逐题讲解。答错的题会自动收入<b>错题本</b>，答对后自动移出。每组拿到 80 分再进入下一组。</p>
+    </div>
+
+    <section class="sec" id="overview">
+      <div class="sec-head"><h2>战绩总览</h2><span class="rule"></span>
+        <button class="btn sm ghost" id="reset-all">清空全部成绩与错题</button></div>
+      <div class="dash" id="q-dash"></div>
+    </section>
+
+    <div class="chips" id="q-chips">
+      <button class="chip" data-jump="mistakes">错题本<span class="n" id="mi-chip"></span></button>
+    </div>
+
+    <div id="quiz-box"></div>
+
+    <section class="sec" id="mistakes">
+      <div class="sec-head"><h2>错题本</h2><span class="cnt" id="mi-cnt"></span><span class="rule"></span>
+        <button class="btn sm ghost" id="mi-clear">清空错题本</button></div>
+      <p class="muted small">做错一次就收进来，重做答对会自动移出。复习时先看题干，想清楚再对答案。</p>
+      <div id="mi-list"></div>
+    </section>
+
+    <p class="voice-note muted small"></p>
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="footer-in">
+    <span>五组全过，出师。</span>
+    <span>粤语系统教程 V2 · 第五篇</span>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+<script src="assets/data-phonetics.js"></script>
+<script src="assets/data-vocab.js"></script>
+<script src="assets/data-grammar.js"></script>
+<script src="assets/data-dialogues.js"></script>
+<script src="assets/data-diff.js"></script>
+<script src="assets/data-quiz.js"></script>
+<script>
+(function(){
+  var $ = YY.$, esc = YY.esc;
+
+  YY.setToc(QUIZ_SECTIONS.map(function(s, i){
+    return {id:"q-" + s.key, label:s.t, n:YY.pad(i + 1), c:s.qs.length};
+  }).concat([{id:"mistakes", label:"错题本", n:"✎"}]));
+
+  $("#q-chips").innerHTML += QUIZ_SECTIONS.map(function(s, i){
+    return '<button class="chip" data-jump="' + i + '">' + esc(s.t) + '<span class="n">' + s.qs.length + "</span></button>";
+  }).join("");
+  $("#q-chips").addEventListener("click", function(e){
+    var c = e.target.closest(".chip");
+    if(!c) return;
+    if(c.dataset.jump === "mistakes"){ document.getElementById("mistakes").scrollIntoView({block:"start"}); return; }
+    var el = document.getElementById("q-" + QUIZ_SECTIONS[+c.dataset.jump].key);
+    if(el) el.scrollIntoView({block:"start"});
+  });
+
+  /* 渲染五组 */
+  var box = $("#quiz-box");
+  QUIZ_SECTIONS.forEach(function(s, i){
+    var sec = document.createElement("section");
+    sec.className = "sec"; sec.id = "q-" + s.key;
+    sec.innerHTML =
+      '<div class="sec-head"><h2><span style="font-family:var(--mono);font-size:.82rem;color:var(--primary);margin-right:8px">' + YY.pad(i + 1) + "</span>" + esc(s.t) + "</h2>" +
+      '<span class="cnt">' + s.qs.length + ' 题</span><span class="rule"></span>' +
+      '<span class="cnt" id="q-best-' + s.key + '"></span></div>' +
+      '<div id="qs-' + s.key + '"></div>' +
+      '<div class="btnrow mt16" id="quiz-bar-' + s.key + '">' +
+        '<button class="btn primary" data-submit="1">交卷</button>' +
+        '<button class="btn ghost" data-reset="1">重做</button></div>' +
+      '<div class="quiz-result" id="res-' + s.key + '"></div>';
+    box.appendChild(sec);
+    YY.renderQuiz($("#qs-" + s.key), {key:s.key, title:s.t, qs:s.qs});
+  });
+
+  /* 总览 + 每组最好成绩 */
+  function refresh(){
+    var p = YY.progress();
+    var avg = p.quizDone ? Math.round(p.bestSum / (p.quizDone * 8) * 100) : 0;
+    $("#q-dash").innerHTML =
+      '<div class="stat"><div class="k">已完成组数</div><div class="v">' + p.quizDone + '<small> / ' + p.quizTotal + ' 组</small></div>' +
+        '<div class="bar"><i style="width:' + (p.quizDone / p.quizTotal * 100) + '%"></i></div></div>' +
+      '<div class="stat"><div class="k">最佳平均分</div><div class="v">' + (p.quizDone ? avg : "—") + '<small>' + (p.quizDone ? " 分" : "") + '</small></div>' +
+        '<div class="bar"><i style="width:' + avg + '%"></i></div><div class="s">按各组最好成绩计算</div></div>' +
+      '<div class="stat"><div class="k">错题待复习</div><div class="v">' + p.mistakes + '<small> 题</small></div>' +
+        '<div class="bar"><i style="width:' + Math.min(100, p.mistakes * 8) + '%"></i></div></div>' +
+      '<div class="stat"><div class="k">过关标准</div><div class="v">80<small> 分</small></div>' +
+        '<div class="bar"><i style="width:' + (p.quizDone && avg >= 80 ? 100 : 0) + '%"></i></div><div class="s">每组 8 题，答对 7 题即过关</div></div>';
+
+    QUIZ_SECTIONS.forEach(function(s){
+      var r = p.records[s.key];
+      var el = document.getElementById("q-best-" + s.key);
+      if(el) el.textContent = r ? "最好成绩 " + r.best + " / " + r.total + "（" + Math.round(r.best / r.total * 100) + " 分）" : "尚未作答";
+    });
+    $("#mi-chip").textContent = p.mistakes ? p.mistakes.length : "";
+    renderMistakes();
+  }
+
+  function renderMistakes(){
+    var ms = YY.mistakes();
+    $("#mi-cnt").textContent = ms.length ? "共 " + ms.length + " 题" : "";
+    if(!ms.length){ $("#mi-list").innerHTML = '<div class="empty">错题本是空的 —— 要么还没做练习，要么你已经全对了。</div>'; return; }
+    $("#mi-list").innerHTML = ms.map(function(m){
+      return '<div class="mistake"><span class="mi">' + (m.qi + 1) + '</span><div class="mb">' +
+        '<div class="mq">' + m.q + "</div>" +
+        '<div class="ma">你选：<i>' + (m.chose == null ? "未作答" : esc(m.o[m.chose])) + "</i>　正确答案：<b>" + esc(m.o[m.a]) + "</b>" +
+        '　<span class="muted">· ' + esc(m.t) + '</span></div>' +
+        '<div class="ma">' + m.e + "</div>" +
+        '<div class="btnrow" style="margin-top:8px"><button class="btn sm ghost" data-drop="' + m.key + ":" + m.qi + '">已掌握，移出</button></div>' +
+      "</div></div>";
+    }).join("");
+  }
+
+  $("#mi-list").addEventListener("click", function(e){
+    var d = e.target.closest("[data-drop]");
+    if(!d) return;
+    var parts = d.dataset.drop.split(":");
+    YY.dropMistake(parts[0], +parts[1]);
+    document.dispatchEvent(new CustomEvent("yy:progress"));
+    YY.toast("已移出错题本");
+  });
+
+  document.addEventListener("yy:progress", refresh);
+  refresh();
+
+  $("#mi-clear").addEventListener("click", function(){
+    if(!YY.mistakes().length){ YY.toast("错题本已经是空的"); return; }
+    if(!confirm("确定清空全部错题？（不影响测验成绩）")) return;
+    YY.saveMistakes([]);
+    document.dispatchEvent(new CustomEvent("yy:progress"));
+    YY.toast("已清空错题本");
+  });
+
+  $("#reset-all").addEventListener("click", function(){
+    if(!confirm("确定清空全部测验成绩与错题本？（不影响词汇与场景标记）")) return;
+    localStorage.removeItem("yy2.quiz");
+    localStorage.removeItem("yy2.mistakes");
+    document.dispatchEvent(new CustomEvent("yy:progress"));
+    YY.toast("已清空成绩与错题");
+    QUIZ_SECTIONS.forEach(function(s){
+      YY.renderQuiz($("#qs-" + s.key), {key:s.key, title:s.t, qs:s.qs});
+      var rb = document.getElementById("res-" + s.key);
+      if(rb){ rb.classList.remove("show"); rb.innerHTML = ""; }
+    });
+  });
+
+  /* 支持从其他页跳转 #mistakes */
+  if(location.hash === "#mistakes"){ setTimeout(function(){ document.getElementById("mistakes").scrollIntoView({block:"start"}); }, 200); }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" data-fs="m">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>粤语系统教程 · 广州话完全手册</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>
+(function(){try{var r=document.documentElement;
+r.setAttribute("data-theme",JSON.parse(localStorage.getItem("yy2.theme")||'"light"')==="dark"?"dark":"light");
+var f=JSON.parse(localStorage.getItem("yy2.fs")||'"m"');r.setAttribute("data-fs",/^[sml]$/.test(f)?f:"m");
+}catch(e){}})();
+</script>
+</head>
+<body data-page="index">
+
+<header id="topbar"></header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="content">
+
+    <section class="hero">
+      <div class="kicker">Guangzhou Cantonese · 完全自修手册</div>
+      <h1>粤语<span class="accent">系统教程</span></h1>
+      <p class="lead">写给定居广州的你：从声韵调起步，经词汇、语法，到十个生活场景与验收测验 —— 一套完整的广州话自修体系。不速成，只求讲得对、听得明、留得下。</p>
+      <div class="metrics" id="hero-metrics"></div>
+    </section>
+
+    <section class="sec" style="margin-top:34px">
+      <div class="sec-head">
+        <h2>学习进度</h2><span class="rule"></span>
+        <button class="btn sm ghost" id="dash-reset">清空全部记录</button>
+      </div>
+      <div class="dash" id="dash"></div>
+      <p class="voice-note muted small" style="margin-top:14px">正在检测系统语音……</p>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><h2>六篇进阶路线</h2><span class="cnt">按顺序推进，或在任意页面跳读</span><span class="rule"></span></div>
+      <div class="grid cols3" id="roadmap"></div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><h2>怎样使用这本手册</h2><span class="rule"></span></div>
+      <ol class="muted small" style="padding-left:20px;line-height:2">
+        <li>先读<b>语音</b>一篇：一个下午啃下六声与粤拼，此后字典、输入法全通。</li>
+        <li>每天攻<b>词汇</b>的一类：点词条看详情，朗读跟读三遍，再标记已学。</li>
+        <li><b>语法</b>不求背，每周精读两个专题，开口前过一遍句型框架。</li>
+        <li><b>场景对话</b>每天演一个：整段朗读 → 逐句跟读 → 收藏常用句。</li>
+        <li>遇到粤普同类词的疑惑，翻<b>粤普差异</b>专题做对照。</li>
+        <li>每组<b>练习</b>拿到 80 分再进入下一组；五组全过，出师。</li>
+        <li>进度与错题自动存在本机浏览器，换浏览器或清缓存会丢失。</li>
+      </ol>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><h2>最近错题</h2><span class="cnt" id="mi-cnt"></span><span class="rule"></span>
+        <a class="btn sm ghost" href="practice.html#mistakes">查看错题本</a></div>
+      <div id="home-mistakes"></div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="footer-in">
+    <span>日日讲两句，百日自成腔。</span>
+    <span>粤语系统教程 V2 · 广州话完全手册</span>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+<script src="assets/data-phonetics.js"></script>
+<script src="assets/data-vocab.js"></script>
+<script src="assets/data-grammar.js"></script>
+<script src="assets/data-dialogues.js"></script>
+<script src="assets/data-diff.js"></script>
+<script src="assets/data-quiz.js"></script>
+<script>
+(function(){
+  var $ = YY.$;
+  var vocabTotal = VOCAB.reduce(function(a,c){ return a + c.items.length; }, 0);
+  var lineTotal = SCENES.reduce(function(a,c){ return a + c.l.length; }, 0);
+  var quizTotal = QUIZ_SECTIONS.reduce(function(a,c){ return a + c.qs.length; }, 0);
+  var diffTotal = DIFF_GROUPS.reduce(function(a,g){ return a + g.pairs.length; }, 0);
+
+  /* 顶部数据条 */
+  $("#hero-metrics").innerHTML =
+    "<div><b>" + vocabTotal + "</b><span>高频词汇</span></div>" +
+    "<div><b>" + GRAMMAR.length + "</b><span>语法专题</span></div>" +
+    "<div><b>" + SCENES.length + "</b><span>生活场景</span></div>" +
+    "<div><b>" + diffTotal + "</b><span>粤普差异对照</span></div>" +
+    "<div><b>" + quizTotal + "</b><span>练习题</span></div>";
+
+  /* 路线图 */
+  var ROAD = [
+    {file:"phonetics.html", no:"01", t:"语音", d:"粤拼方案、六声九调、19 声母、五十余韵母、懒音与粤普发音差异 —— 一下午打通耳朵和舌头的地基。", f:"6 声 · 19 声母 · 45+ 韵母"},
+    {file:"vocabulary.html", no:"02", t:"词汇", d:"17 类生活高频词：人称、称谓、饮食、家居、情绪俗语。每个词条可点开详情，看到它在全站对话里的真实用法。", f:vocabTotal + " 词 · 17 类"},
+    {file:"grammar.html", no:"03", t:"语法", d:"语序后置、体貌咗/紧/过、比较句「高过」、正反问「食唔食」…… 十一个粤语思维的关键开关。", f:GRAMMAR.length + " 专题 · 50+ 例句"},
+    {file:"dialogues.html", no:"04", t:"场景对话", d:"茶楼饮茶、肠粉店、街市讲价、地铁问路、的士、买衫、睇医生、租楼、返工、街坊物管。", f:SCENES.length + " 场景 · " + lineTotal + " 句"},
+    {file:"diff.html", no:"05", t:"粤普差异", d:"逐组对照粤语与普通话的用词与语序差异：高频动词、否定词、语气词、句法结构，避开「假朋友」陷阱。", f:DIFF_GROUPS.length + " 组 · " + diffTotal + " 对"},
+    {file:"practice.html", no:"06", t:"练习测验", d:"语音辨析、词汇理解、语法运用、对话应对、综合卷 —— 每组 8 题，交卷出分附讲解，错题自动收集。", f:QUIZ_SECTIONS.length + " 组 · " + quizTotal + " 题"}
+  ];
+  $("#roadmap").innerHTML = ROAD.map(function(r){
+    return '<a class="card-mini" href="' + r.file + '">' +
+      '<div class="cm-top"><span class="cm-no">' + r.no + '</span><span class="cm-t">' + r.t + '</span></div>' +
+      '<div class="cm-d">' + r.d + '</div>' +
+      '<div class="cm-f">' + r.f + '</div></a>';
+  }).join("");
+
+  /* 侧栏目录 */
+  $("#hero-metrics").parentElement.id = "hero-top";
+  $("#dash").parentElement.id = "dash-anchor";
+  $("#roadmap").closest(".sec").id = "road-anchor";
+  YY.setToc([
+    {id:"hero-top", label:"卷首", n:"序"},
+    {id:"dash-anchor", label:"学习进度", n:"进"},
+    {id:"road-anchor", label:"六篇进阶路线", n:"路"},
+    {id:"how-to", label:"怎样使用这本手册", n:"用"},
+    {id:"recent-mistakes", label:"最近错题", n:"✎"}
+  ]);
+  document.querySelector("#roadmap").closest(".sec").nextElementSibling.id = "how-to";
+  document.getElementById("how-to").nextElementSibling.id = "recent-mistakes";
+
+  /* 仪表盘 */
+  function renderDash(){
+    var p = YY.progress();
+    var vocabPct = p.vocabTotal ? Math.round(p.vocabLearned / p.vocabTotal * 100) : 0;
+    var scenePct = p.sceneTotal ? Math.round(p.sceneRead / p.sceneTotal * 100) : 0;
+    var quizAvg = p.quizDone ? Math.round(p.bestSum / (p.quizDone * 8) * 100) : 0;
+    $("#dash").innerHTML =
+      '<div class="stat"><div class="k">总体完成度</div><div class="v">' + p.done + '<small> / ' + p.all + ' 条</small></div>' +
+        '<div class="bar"><i style="width:' + p.pct + '%"></i></div><div class="s">词汇与场景标记合计</div></div>' +
+      '<div class="stat"><div class="k">词汇掌握</div><div class="v">' + p.vocabLearned + '<small> / ' + p.vocabTotal + ' 词</small></div>' +
+        '<div class="bar"><i style="width:' + vocabPct + '%"></i></div><div class="s">' + (p.vocabLearned ? "继续加油" : "尚未开始") + "</div></div>" +
+      '<div class="stat"><div class="k">场景读完</div><div class="v">' + p.sceneRead + '<small> / ' + p.sceneTotal + ' 场</small></div>' +
+        '<div class="bar"><i style="width:' + scenePct + '%"></i></div><div class="s">' + (p.sceneRead ? "已过 " + scenePct + "%" : "尚未开始") + "</div></div>" +
+      '<div class="stat"><div class="k">测验战绩</div><div class="v">' + p.quizDone + '<small> / ' + p.quizTotal + ' 组</small></div>' +
+        '<div class="bar"><i style="width:' + (p.quizTotal ? p.quizDone / p.quizTotal * 100 : 0) + '%"></i></div><div class="s">' +
+        (p.quizDone ? "最佳平均 " + quizAvg + " 分" : "尚未作答") + "</div></div>";
+  }
+
+  /* 首页错题预览 */
+  function renderMistakes(){
+    var ms = YY.mistakes().slice(0, 3);
+    $("#mi-cnt").textContent = YY.mistakes().length ? "共 " + YY.mistakes().length + " 题待复习" : "";
+    if(!ms.length){ $("#home-mistakes").innerHTML = '<div class="empty">还没有错题。做完练习后，答错的题会自动收进这里。</div>'; return; }
+    $("#home-mistakes").innerHTML = ms.map(function(m){
+      return '<div class="mistake"><span class="mi">' + (m.qi + 1) + '</span><div class="mb">' +
+        '<div class="mq">' + m.q + "</div>" +
+        '<div class="ma">你选：<i>' + (m.chose == null ? "未作答" : YY.esc(m.o[m.chose])) + "</i>　正确答案：<b>" + YY.esc(m.o[m.a]) + "</b>　·　" + YY.esc(m.t) + "</div>" +
+      "</div></div>";
+    }).join("");
+  }
+
+  renderDash(); renderMistakes();
+  document.addEventListener("yy:progress", function(){ renderDash(); renderMistakes(); });
+
+  $("#dash-reset").addEventListener("click", function(){
+    if(!confirm("确定清空全部学习记录（已学标记、测验成绩、错题本）？此操作不可撤销。")) return;
+    ["yy2.learned","yy2.stats","yy2.quiz","yy2.mistakes"].forEach(function(k){ localStorage.removeItem(k); });
+    YY.toast("已清空全部记录");
+    setTimeout(function(){ location.reload(); }, 600);
+  });
+})();
+</script>
+</body>
+</html>

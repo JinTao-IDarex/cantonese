@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" data-fs="m">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>词汇 · 17 类高频词 — 粤语系统教程</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>
+(function(){try{var r=document.documentElement;
+r.setAttribute("data-theme",JSON.parse(localStorage.getItem("yy2.theme")||'"light"')==="dark"?"dark":"light");
+var f=JSON.parse(localStorage.getItem("yy2.fs")||'"m"');r.setAttribute("data-fs",/^[sml]$/.test(f)?f:"m");
+}catch(e){}})();
+</script>
+</head>
+<body data-page="vocabulary">
+
+<header id="topbar"></header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="content">
+
+    <div class="page-head">
+      <div class="crumb"><a href="index.html">首页</a><span>›</span>词汇</div>
+      <div class="eyebrow">Book Two · Vocabulary</div>
+      <h1 class="page-title">词汇：<span class="accent">17 类高频词</span></h1>
+      <p class="page-desc">粤语与普通话书写相通，词汇差异集中在高频层：吃是「食」、喝是「饮」、看是「睇」、说是「讲」。本章按生活主题分 17 类，共 <b id="vocab-total">—</b> 个词条。点任意词条可展开详情，看到它在全站对话与语法例句里的真实用法。</p>
+    </div>
+
+    <div class="sec" style="margin-bottom:22px">
+      <div class="btnrow" style="justify-content:space-between">
+        <div class="btnrow">
+          <button class="btn sm ghost" id="btn-test-mode">自测模式：关</button>
+          <button class="btn sm ghost" id="btn-reset">清空本页标记</button>
+        </div>
+        <div class="btnrow">
+          <span class="muted small">已学 <b id="p-num">0</b> / <span id="p-total">—</span></span>
+          <span class="bar" style="display:inline-block;width:110px;height:6px;border-radius:3px;background:var(--bg-hover);overflow:hidden;vertical-align:middle"><i id="p-line" style="display:block;height:100%;width:0%;background:var(--primary);border-radius:3px;transition:width .4s"></i></span>
+        </div>
+      </div>
+      <div class="chips" id="cat-chips" style="margin-top:16px"></div>
+    </div>
+
+    <div id="vocab-box"></div>
+
+    <p class="voice-note muted small"></p>
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="footer-in">
+    <span>词是砖，句是梁 —— 砖多，楼自起。</span>
+    <span>粤语系统教程 V2 · 第二篇</span>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+<script src="assets/data-phonetics.js"></script>
+<script src="assets/data-vocab.js"></script>
+<script src="assets/data-grammar.js"></script>
+<script src="assets/data-dialogues.js"></script>
+<script src="assets/data-diff.js"></script>
+<script src="assets/data-quiz.js"></script>
+<script>
+(function(){
+  var $ = YY.$;
+  var total = VOCAB.reduce(function(s, c){ return s + c.items.length; }, 0);
+  $("#vocab-total").textContent = total;
+  $("#p-total").textContent = total;
+
+  /* 侧栏目录 */
+  YY.setToc(VOCAB.map(function(c, i){
+    return {id:"cat-" + i, label:c.cat, n:YY.pad(i + 1), c:c.items.length};
+  }).concat([{id:"vocab-top", label:"本页说明", n:"序"}]));
+
+  /* chip 筛选 */
+  var chips = '<button class="chip active" data-cat="all">全部<span class="n">' + total + "</span></button>" +
+    VOCAB.map(function(c, i){
+      return '<button class="chip" data-cat="' + i + '">' + YY.esc(c.cat) + '<span class="n">' + c.items.length + "</span></button>";
+    }).join("");
+  $("#cat-chips").innerHTML = chips;
+
+  /* 渲染 */
+  var box = $("#vocab-box");
+
+  function itemList(ci){
+    return VOCAB[ci].items.map(function(it, ii){ return {y:it.y, j:it.j, m:it.m, _ci:ci, _ii:ii}; });
+  }
+
+  function renderAll(){
+    box.innerHTML = "";
+    VOCAB.forEach(function(cat, ci){
+      var sec = document.createElement("section");
+      sec.className = "sec"; sec.id = "cat-" + ci;
+      sec.innerHTML =
+        '<div class="sec-head"><h2>' + YY.esc(cat.cat) + "</h2>" +
+        '<span class="cnt">' + cat.items.length + ' 词</span><span class="rule"></span>' +
+        '<span class="cnt" id="catprog-' + ci + '"></span></div>' +
+        '<div class="grid" id="catgrid-' + ci + '"></div>';
+      box.appendChild(sec);
+      YY.renderVocabGrid($("#catgrid-" + ci), itemList(ci), "v:");
+    });
+  }
+  function renderFiltered(ci){
+    var cat = VOCAB[ci];
+    box.innerHTML = '<section class="sec" id="cat-' + ci + '">' +
+      '<div class="sec-head"><h2>' + YY.esc(cat.cat) + "</h2>" +
+      '<span class="cnt">' + cat.items.length + ' 词</span><span class="rule"></span>' +
+      '<span class="cnt" id="catprog-' + ci + '"></span></div>' +
+      '<div class="grid" id="catgrid-' + ci + '"></div></section>';
+    YY.renderVocabGrid($("#catgrid-" + ci), itemList(ci), "v:");
+  }
+
+  var curCat = "all";
+  function render(){
+    if(curCat === "all") renderAll(); else renderFiltered(curCat);
+    refresh();
+  }
+  $("#cat-chips").addEventListener("click", function(e){
+    var chip = e.target.closest(".chip");
+    if(!chip) return;
+    YY.$$("#cat-chips .chip").forEach(function(c){ c.classList.remove("active"); });
+    chip.classList.add("active");
+    curCat = chip.dataset.cat;
+    render();
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+
+  /* 进度 */
+  function refresh(){
+    var n = 0;
+    VOCAB.forEach(function(cat, ci){
+      var c = 0;
+      cat.items.forEach(function(_, ii){ if(YY.isLearned("v:" + ci + ":" + ii)) c++; });
+      n += c;
+      var el = document.getElementById("catprog-" + ci);
+      if(el) el.textContent = "已学 " + c + " / " + cat.items.length;
+    });
+    $("#p-num").textContent = n;
+    $("#p-line").style.width = (n / total * 100).toFixed(1) + "%";
+  }
+  document.addEventListener("yy:progress", refresh);
+
+  render();
+
+  /* 自测模式：隐藏释义，点卡片核对 */
+  $("#btn-test-mode").addEventListener("click", function(){
+    var on = document.body.classList.toggle("test-mode");
+    this.textContent = "自测模式：" + (on ? "开（点卡片核对）" : "关");
+    this.classList.toggle("on", on);
+    YY.$$(".tcard .tc-m").forEach(function(m){ m.style.visibility = on ? "hidden" : ""; });
+    YY.$$(".tcard").forEach(function(c){
+      c.onclick = on ? function(ev){
+        if(ev.target.closest("button")) return;
+        var m = c.querySelector(".tc-m");
+        if(m) m.style.visibility = m.style.visibility === "hidden" ? "" : "hidden";
+      } : null;
+    });
+  });
+
+  $("#btn-reset").addEventListener("click", function(){
+    if(!confirm("确定清除本页全部「已学」记录？（不影响其他页面与测验成绩）")) return;
+    VOCAB.forEach(function(cat, ci){
+      cat.items.forEach(function(_, ii){
+        var id = "v:" + ci + ":" + ii;
+        if(YY.isLearned(id)){ YY.toggleLearned(id); }
+      });
+    });
+    document.dispatchEvent(new CustomEvent("yy:progress"));
+    YY.$$(".tcard").forEach(function(c){ c.classList.remove("learned"); var f = c.querySelector(".flag"); if(f) f.textContent = ""; });
+    YY.$$("[data-markbtn]").forEach(function(b){ b.classList.remove("on"); b.textContent = "标记"; });
+    YY.toast("已清空本页标记");
+  });
+})();
+</script>
+</body>
+</html>

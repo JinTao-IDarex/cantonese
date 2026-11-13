@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" data-fs="m">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>场景对话 · 10 个生活场景 — 粤语系统教程</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>
+(function(){try{var r=document.documentElement;
+r.setAttribute("data-theme",JSON.parse(localStorage.getItem("yy2.theme")||'"light"')==="dark"?"dark":"light");
+var f=JSON.parse(localStorage.getItem("yy2.fs")||'"m"');r.setAttribute("data-fs",/^[sml]$/.test(f)?f:"m");
+}catch(e){}})();
+</script>
+</head>
+<body data-page="dialogues">
+
+<header id="topbar"></header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="content">
+
+    <div class="page-head">
+      <div class="crumb"><a href="index.html">首页</a><span>›</span>场景对话</div>
+      <div class="eyebrow">Book Four · Dialogues</div>
+      <h1 class="page-title">场景对话：<span class="accent">10 个生活现场</span></h1>
+      <p class="page-desc">从茶楼点单到街市讲价、从地铁问路到睇医生 —— 十个最常遇到的广州生活场景，共 <b id="line-total">—</b> 句实地对话。可整段朗读建立语感，也可逐句跟读、收藏常用句。</p>
+    </div>
+
+    <div class="sec" style="margin-bottom:22px">
+      <div class="btnrow" style="justify-content:space-between">
+        <div class="btnrow">
+          <button class="btn sm ghost" id="btn-hide">遮住普通话：关</button>
+          <button class="btn sm ghost" id="btn-reset">清空本页标记</button>
+        </div>
+        <span class="muted small">已读完 <b id="d-num">0</b> / <span id="d-total">—</span> 场</span>
+      </div>
+      <div class="chips" id="d-chips" style="margin-top:16px"></div>
+    </div>
+
+    <div id="scene-box"></div>
+
+    <p class="voice-note muted small"></p>
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="footer-in">
+    <span>语言是演出来的，不是背出来的。</span>
+    <span>粤语系统教程 V2 · 第四篇</span>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+<script src="assets/data-phonetics.js"></script>
+<script src="assets/data-vocab.js"></script>
+<script src="assets/data-grammar.js"></script>
+<script src="assets/data-dialogues.js"></script>
+<script src="assets/data-diff.js"></script>
+<script src="assets/data-quiz.js"></script>
+<script>
+(function(){
+  var $ = YY.$, esc = YY.esc;
+  var totalLines = SCENES.reduce(function(a, s){ return a + s.l.length; }, 0);
+  $("#line-total").textContent = totalLines;
+  $("#d-total").textContent = SCENES.length;
+
+  YY.setToc(SCENES.map(function(s, i){
+    return {id:"s-" + i, label:s.t, n:YY.pad(i + 1), c:s.l.length};
+  }));
+
+  $("#d-chips").innerHTML = SCENES.map(function(s, i){
+    return '<button class="chip" data-jump="' + i + '">' + esc(s.t) + "</button>";
+  }).join("");
+  $("#d-chips").addEventListener("click", function(e){
+    var c = e.target.closest(".chip");
+    if(!c) return;
+    var el = document.getElementById("s-" + c.dataset.jump);
+    if(el) el.scrollIntoView({block:"start"});
+  });
+
+  var box = $("#scene-box");
+  SCENES.forEach(function(sc, i){
+    var sec = document.createElement("section");
+    sec.className = "sec"; sec.id = "s-" + i;
+    box.appendChild(sec);
+    YY.renderScene(sec, sc, i);
+  });
+
+  function refresh(){
+    var n = 0;
+    SCENES.forEach(function(_, i){
+      var on = YY.isLearned("d:" + i);
+      if(on) n++;
+      var btn = document.querySelector('[data-scene-mark="' + i + '"]');
+      if(btn){ btn.classList.toggle("on", on); btn.textContent = on ? "已读完 ✓" : "标记读完"; }
+    });
+    $("#d-num").textContent = n;
+  }
+  document.addEventListener("yy:progress", refresh);
+
+  box.addEventListener("click", function(e){
+    var all = e.target.closest("[data-playall]");
+    if(all){ YY.playAll(SCENES[+all.dataset.playall]); return; }
+
+    var mk = e.target.closest("[data-scene-mark]");
+    if(mk){
+      var id = "d:" + mk.dataset.sceneMark;
+      YY.toggleLearned(id);
+      document.dispatchEvent(new CustomEvent("yy:progress"));
+      YY.toast(YY.isLearned(id) ? "已标记读完" : "已取消标记");
+      return;
+    }
+
+    var fav = e.target.closest("[data-dline-mark]");
+    if(fav){
+      YY.toggleLearned(fav.dataset.dlineMark);
+      var on = YY.isLearned(fav.dataset.dlineMark);
+      fav.classList.toggle("on", on);
+      fav.textContent = on ? "已收藏 ✓" : "收藏这句";
+      YY.toast(on ? "已收藏这句" : "已取消收藏");
+    }
+  });
+
+  refresh();
+
+  /* 遮住普通话，练听力 */
+  $("#btn-hide").addEventListener("click", function(){
+    var on = document.body.classList.toggle("hide-m");
+    this.textContent = "遮住普通话：" + (on ? "开" : "关");
+    this.classList.toggle("on", on);
+    YY.$$(".dline .m").forEach(function(m){ m.style.visibility = on ? "hidden" : ""; });
+  });
+
+  $("#btn-reset").addEventListener("click", function(){
+    if(!confirm("确定清除本页全部「读完」标记与收藏句？")) return;
+    SCENES.forEach(function(_, i){ if(YY.isLearned("d:" + i)) YY.toggleLearned("d:" + i); });
+    YY.toast("已清空本页标记");
+    setTimeout(function(){ location.reload(); }, 500);
+  });
+})();
+</script>
+</body>
+</html>

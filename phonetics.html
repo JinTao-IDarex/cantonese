@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" data-fs="m">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>语音 · 声韵调 — 粤语系统教程</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>
+(function(){try{var r=document.documentElement;
+r.setAttribute("data-theme",JSON.parse(localStorage.getItem("yy2.theme")||'"light"')==="dark"?"dark":"light");
+var f=JSON.parse(localStorage.getItem("yy2.fs")||'"m"');r.setAttribute("data-fs",/^[sml]$/.test(f)?f:"m");
+}catch(e){}})();
+</script>
+</head>
+<body data-page="phonetics">
+
+<header id="topbar"></header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="content">
+
+    <div class="page-head">
+      <div class="crumb"><a href="index.html">首页</a><span>›</span>语音</div>
+      <div class="eyebrow">Book One · Phonology</div>
+      <h1 class="page-title">语音：<span class="accent">声、韵、调</span></h1>
+      <p class="page-desc">粤语语音系统由 19 个声母、五十多个韵母和 6 个声调（加 3 个入声）构成。本章从粤拼方案讲起，逐个攻下声母、韵母，再认识广州人真实的「懒音」。学完本章，你就能查任何一本粤语字典。</p>
+    </div>
+
+    <section class="sec" id="sec-1">
+      <div class="sec-head"><h2>粤拼是什么</h2><span class="rule"></span></div>
+      <p>本教程采用<b>香港语言学学会粤语拼音方案</b>（Jyutping，简称粤拼）。它用拉丁字母加数字声调标记粤语读音：一个音节 = 声母 + 韵母 + 声调数字，例如「埋单」= <span class="jp">maai4 daan1</span>。</p>
+      <p>粤拼是粤语世界的「汉语拼音」：广州话字典、粤拼输入法、维基百科粤语版都用它。认得粤拼，任何一个陌生字你都能查到、打出来、读出来。</p>
+      <div class="note"><span class="nt">Reading Note</span>和汉语拼音一样，粤拼是标音工具而非文字。读粤拼时记住三件事：数字是声调（1 最高，6 最低）；j 读「衣」；c 送气读「呲」。</div>
+    </section>
+
+    <section class="sec" id="sec-2">
+      <div class="sec-head"><h2>声调：六声九调</h2><span class="rule"></span>
+        <button class="btn sm" data-say="诗史试时市是">连续朗读：诗史试时市是</button></div>
+      <p>粤语有六个基本声调。先用「诗史试时市是」这组同音字校准耳朵 —— 点右上按钮连续听一遍，再逐字跟读。</p>
+      <div style="overflow-x:auto"><table class="tbl" style="margin-top:14px">
+        <thead><tr><th style="width:74px">调号</th><th style="width:84px">调值</th><th style="width:132px">名称</th><th style="width:150px">例字</th><th style="width:80px">粤拼</th><th>要点</th><th style="width:56px"></th></tr></thead>
+        <tbody id="tones-box"></tbody>
+      </table></div>
+
+      <h3 style="margin:26px 0 12px;font-size:1.05rem">入声：三个「急促调」</h3>
+      <p>以 -p、-t、-k 收尾的音节叫入声，读起来短促有力，像被掐断。它们分别借用第 1、3、6 调的调值，合称「九声」。</p>
+      <div style="overflow-x:auto"><table class="tbl">
+        <thead><tr><th style="width:90px">例字</th><th style="width:110px">粤拼</th><th>说明</th><th style="width:56px"></th></tr></thead>
+        <tbody id="checked-box"></tbody>
+      </table></div>
+      <div class="note"><span class="nt">Tip</span>初学先攻 2、4、6 三个调的对比（升、降、低平），它们区分字义最敏感：「史 si2、时 si4、是 si6」读错就是三个不同的字。</div>
+    </section>
+
+    <section class="sec" id="sec-3">
+      <div class="sec-head"><h2>声母：19 个</h2><span class="rule"></span></div>
+      <p>粤语声母比普通话少（无 zh ch sh、无 j q x），多出 ng、gw、kw 三个。下表每个声母配发音要领、与普通话的对比和例字 —— 例字都可点朗读。</p>
+      <div style="overflow-x:auto"><table class="tbl" style="margin-top:14px">
+        <thead><tr><th style="width:64px">声母</th><th style="width:74px">音标</th><th style="width:150px">发音要领</th><th style="width:300px">与普通话对比</th><th>例字</th></tr></thead>
+        <tbody id="initials-box"></tbody>
+      </table></div>
+    </section>
+
+    <section class="sec" id="sec-4">
+      <div class="sec-head"><h2>韵母：分组总表</h2><span class="rule"></span>
+        <span class="cnt">11 组 · 50+ 韵母</span></div>
+      <p>粤语韵母五十余个，以下按韵腹分组列出常用项。注意三组普通话完全没有的韵母：<b>eoi / oe / yu</b> —— 这是北方口音学粤语的第一道坎，多听多模仿。</p>
+      <div id="finals-box" style="margin-top:16px"></div>
+    </section>
+
+    <section class="sec" id="sec-5">
+      <div class="sec-head"><h2>懒音：街坊的真实发音</h2><span class="rule"></span></div>
+      <p>懒音是广州口语中普遍的音变现象。想听懂地铁报站和街坊闲聊，必须认识它们；但自己开口，建议先读标准音。</p>
+      <div id="lazy-box" style="margin-top:16px"></div>
+    </section>
+
+    <section class="sec" id="sec-6">
+      <div class="sec-head"><h2>粤普发音差异总览</h2><span class="rule"></span>
+        <a class="btn sm ghost" href="diff.html">看完整粤普差异专题 →</a></div>
+      <p>把粤普差异装进一张表，避免拿普通话的耳朵去听粤语、拿普通话的嘴去讲粤语。更细的用词与句法差异，见<a href="diff.html">粤普差异专题</a>。</p>
+      <div style="overflow-x:auto"><table class="tbl" style="margin-top:14px">
+        <thead><tr><th style="width:90px">项目</th><th>差异</th></tr></thead>
+        <tbody id="diff-box"></tbody>
+      </table></div>
+    </section>
+
+    <p class="voice-note muted small"></p>
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="footer-in">
+    <span>先把耳朵打通，嘴自然跟得上。</span>
+    <span>粤语系统教程 V2 · 第一篇</span>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+<script src="assets/data-phonetics.js"></script>
+<script src="assets/data-vocab.js"></script>
+<script src="assets/data-grammar.js"></script>
+<script src="assets/data-dialogues.js"></script>
+<script src="assets/data-diff.js"></script>
+<script src="assets/data-quiz.js"></script>
+<script>
+(function(){
+  var $ = YY.$, esc = YY.esc;
+
+  YY.setToc([
+    {id:"sec-1", label:"粤拼是什么", n:"01"},
+    {id:"sec-2", label:"声调：六声九调", n:"02"},
+    {id:"sec-3", label:"声母：19 个", n:"03"},
+    {id:"sec-4", label:"韵母：分组总表", n:"04"},
+    {id:"sec-5", label:"懒音：街坊的真实发音", n:"05"},
+    {id:"sec-6", label:"粤普发音差异总览", n:"06"}
+  ]);
+
+  /* 声调表 */
+  $("#tones-box").innerHTML = PH_TONES.map(function(t){
+    return "<tr><td class=\"tone-n\">第 " + t.n + " 声</td><td class=\"tbl-note\">" + esc(t.v) + "</td>" +
+      "<td><b>" + esc(t.d) + "</b></td><td>" + esc(t.ex) + "</td>" +
+      '<td class="jp">' + esc(t.jp) + "</td><td class=\"tbl-note\">" + esc(t.tip) + "</td>" +
+      '<td><button class="btn sm ghost" data-say="' + esc(t.jp) + '">听</button></td></tr>';
+  }).join("");
+
+  /* 入声表 */
+  $("#checked-box").innerHTML = PH_CHECKED.map(function(c){
+    return "<tr><td>" + esc(c.ex) + '</td><td class="jp">' + esc(c.jp) + "</td><td class=\"tbl-note\">" + esc(c.d) + "</td>" +
+      '<td><button class="btn sm ghost" data-say="' + esc(c.jp) + '">听</button></td></tr>';
+  }).join("");
+
+  /* 声母表 */
+  $("#initials-box").innerHTML = PH_INITIALS.map(function(x){
+    return "<tr><td style=\"font-size:1.1rem;font-weight:700;color:var(--primary)\">" + esc(x.j) + "</td>" +
+      '<td class="jp">' + esc(x.ipa) + "</td>" +
+      "<td>" + esc(x.d) + "</td>" +
+      '<td class="tbl-note">' + esc(x.cmp) + "</td>" +
+      "<td>" + x.ex.map(function(e){
+        return '<button class="chip mini" data-say="' + esc(e[0]) + '">' + esc(e[0]) + ' <span class="jp">' + esc(e[1]) + "</span></button>";
+      }).join(" ") + "</td></tr>";
+  }).join("");
+
+  /* 韵母表 */
+  $("#finals-box").innerHTML = PH_FINALS.map(function(g){
+    return '<div class="sec" style="margin-bottom:18px">' +
+      '<div class="sec-head"><h3 style="font-size:.98rem">' + esc(g.g) + '</h3><span class="cnt">' + g.rows.length + ' 个</span><span class="rule"></span></div>' +
+      '<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">' +
+      g.rows.map(function(r){
+        return '<div class="tcard" tabindex="0" data-say="' + esc(r[1]) + '" style="padding:11px 13px;gap:3px">' +
+          '<div class="tc-top"><span class="tc-j" style="font-size:.92rem">' + esc(r[0]) + '</span>' +
+          '<span class="tc-m" style="font-size:.82rem">' + esc(r[1]) + "</span></div>" +
+          '<div class="tc-m" style="font-size:.78rem">' + esc(r[2]) + "</div></div>";
+      }).join("") + "</div></div>";
+  }).join("");
+
+  /* 懒音 */
+  $("#lazy-box").innerHTML = PH_LAZY.map(function(x){
+    return '<div class="note" style="border-left-color:var(--warn)">' +
+      '<span class="nt" style="color:var(--warn)">' + esc(x.t) + "</span>" +
+      esc(x.d) + (x.ex ? '<div class="jp" style="margin-top:7px">' + esc(x.ex) + "</div>" : "") + "</div>";
+  }).join("");
+
+  /* 粤普差异 */
+  $("#diff-box").innerHTML = PH_DIFF.map(function(d){
+    return '<tr><td><b>' + esc(d[0]) + "</b></td><td class=\"tbl-note\">" + esc(d[1]) + "</td></tr>";
+  }).join("");
+})();
+</script>
+</body>
+</html>
